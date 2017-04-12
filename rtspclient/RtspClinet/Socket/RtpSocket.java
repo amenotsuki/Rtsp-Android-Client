@@ -96,8 +96,8 @@ public class RtpSocket implements Runnable {
                         byte[] tcpbuffer = tcpBuffer.take();
                         offset = 0;
 
-                        if(rtspBuffer.inNextPacket) {
-                            if(packetFlag) {
+                        if(rtspBuffer!=null&&rtspBuffer.inNextPacket) {//rtspBuffer空指针
+                            if(packetFlag&&tcpbuffer.length>1) {//tcpbuffer下标溢出
                                 rtspBuffer.len = ((tcpbuffer[0]&0xFF)<<8)|(tcpbuffer[1]&0xFF);
                                 rtspBuffer.data = new byte[rtspBuffer.len];
                                 rtspBuffer.offset = 0;
@@ -119,7 +119,10 @@ public class RtpSocket implements Runnable {
                             analysisOnePacket(tcpbuffer,0);
                         }
                     } catch (InterruptedException e) {
+                        e.printStackTrace();
                         Log.e(tag,"The tcp buffer queue is empty..");
+                    }catch (NullPointerException | ArrayIndexOutOfBoundsException e){
+                        e.printStackTrace();
                     }
                 }
             }

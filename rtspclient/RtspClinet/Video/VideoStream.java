@@ -90,6 +90,9 @@ public abstract class VideoStream extends RtpStream {
                         NALUnit[2] = 0x00;
                         NALUnit[3] = 0x01;
                         tmpLen = 4;
+                        if(buffer[1]==null){//空指针
+                            break;
+                        }
                         System.arraycopy(buffer[1], 0, NALUnit, tmpLen, buffer[1].length);
                         tmpLen += buffer[1].length;
                         for(int i = 2; i < packetNum+1; ++i) {

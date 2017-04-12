@@ -85,7 +85,7 @@ public class H264Stream extends VideoStream {
                     tmpByte = bufferQueue.take();
                     framType = tmpByte[4]&0x1F;
                     if(framType == 5) startKeyFrame = true;
-                    if(startKeyFrame || framType == 7 || framType == 8) {
+                    if((startKeyFrame || framType == 7 || framType == 8)&&mMeidaCodec!=null) {
                         inputBufferIndex = mMeidaCodec.dequeueInputBuffer(2000);
                         if (inputBufferIndex > 1) {
                             ByteBuffer inputBuffer = inputBuffers[inputBufferIndex];
@@ -107,14 +107,16 @@ public class H264Stream extends VideoStream {
                             mCount++;
                         }
                     }
-                } catch (InterruptedException e) {
+                } catch (InterruptedException | IllegalStateException e) {
                     Log.e(tag,"Wait the buffer come..");
                 }
             }
             bufferQueue.clear();
-            mMeidaCodec.stop();
-            mMeidaCodec.release();
-            mMeidaCodec = null;
+            if(mMeidaCodec!=null){
+                mMeidaCodec.stop();
+                mMeidaCodec.release();
+                mMeidaCodec = null;
+            }
         }
     };
 
